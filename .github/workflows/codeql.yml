@@ -28,17 +28,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+        uses: github/codeql-action/init@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
         with:
           languages: actions
           build-mode: none
 
       - name: Perform CodeQL Analysis
         id: analyze
-        uses: github/codeql-action/analyze@v4
+        uses: github/codeql-action/analyze@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
         with:
           category: "/language:actions"
           output: ${{ runner.temp }}/codeql-sarif
@@ -60,7 +60,7 @@ jobs:
 
       - name: Upload CodeQL reports
         if: always() && steps.analyze.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: codeql-security-report
           path: |
@@ -78,7 +78,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install Semgrep
         run: pipx install semgrep
@@ -108,7 +108,7 @@ jobs:
           echo "sarif-dir=${SARIF_DIR}" >> "${GITHUB_OUTPUT}"
 
       - name: Upload SARIF to code scanning
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
         with:
           sarif_file: ${{ steps.semgrep.outputs.sarif-dir }}/semgrep.sarif
           category: "/language:php"
@@ -127,7 +127,7 @@ jobs:
             | tee -a "${GITHUB_STEP_SUMMARY}"
 
       - name: Upload PHP security reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: php-security-report
           path: |

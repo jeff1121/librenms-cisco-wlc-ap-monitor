@@ -56,7 +56,7 @@ The CodeQL workflow covers two scanners:
 - GitHub CodeQL for GitHub Actions YAML. CodeQL does not support PHP.
 - Semgrep for PHP and secrets, using the `p/php`, `p/security-audit`, `p/owasp-top-ten`, and `p/secrets` rule packs.
 
-Both scanners upload SARIF to the repository Security tab, write a Markdown summary on the workflow run, and store report artifacts (`codeql-security-report` and `php-security-report`). The scan also runs every Monday and can be started manually with **Actions → CodeQL → Run workflow**.
+Both scanners upload SARIF to the repository Security tab, write a Markdown summary on the workflow run, and store report artifacts (`codeql-security-report` and `php-security-report`). The scan also runs every Monday and can be started manually with **Actions → CodeQL → Run workflow**. GitHub Actions are pinned to commit SHAs.
 
 ## Create a release
 
