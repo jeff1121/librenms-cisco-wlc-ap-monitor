@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Added a GitHub Actions CodeQL workflow for PHP security-and-quality scanning, with SARIF/Markdown reports.
+- Added a GitHub Actions security workflow: CodeQL for Actions YAML, Semgrep SARIF scanning for PHP, and Markdown/SARIF reports.
 - Published the repository under `jeff1121/librenms-cisco-wlc-ap-monitor`.
 
 ## 1.2.0 - 2026-07-22

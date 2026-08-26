@@ -51,7 +51,12 @@ git push -u origin feature/my-change
 
 Open a pull request into `main` and wait for the PHP lint and CodeQL workflows to pass.
 
-CodeQL uploads alerts to the repository Security tab, writes a Markdown summary on the workflow run, and stores a `codeql-security-report` artifact (SARIF plus Markdown). The scan also runs every Monday and can be started manually with **Actions → CodeQL → Run workflow**.
+The CodeQL workflow covers two scanners:
+
+- GitHub CodeQL for GitHub Actions YAML. CodeQL does not support PHP.
+- Semgrep for PHP and secrets, using the `p/php`, `p/security-audit`, `p/owasp-top-ten`, and `p/secrets` rule packs.
+
+Both scanners upload SARIF to the repository Security tab, write a Markdown summary on the workflow run, and store report artifacts (`codeql-security-report` and `php-security-report`). The scan also runs every Monday and can be started manually with **Actions → CodeQL → Run workflow**.
 
 ## Create a release
 

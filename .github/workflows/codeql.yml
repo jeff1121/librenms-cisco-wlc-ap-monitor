@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   analyze:
-    name: Analyze PHP
+    name: Analyze Actions
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -33,15 +33,14 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
-          languages: php
+          languages: actions
           build-mode: none
-          queries: security-and-quality
 
       - name: Perform CodeQL Analysis
         id: analyze
         uses: github/codeql-action/analyze@v4
         with:
-          category: "/language:php"
+          category: "/language:actions"
           output: ${{ runner.temp }}/codeql-sarif
           upload: always
           wait-for-processing: true
@@ -56,7 +55,7 @@ jobs:
             --output "${{ runner.temp }}/codeql-report.md" \
             --repository "${{ github.repository }}" \
             --sha "${{ github.sha }}" \
-            --query-suite security-and-quality \
+            --query-suite default \
             | tee -a "${GITHUB_STEP_SUMMARY}"
 
       - name: Upload CodeQL reports
@@ -67,5 +66,72 @@ jobs:
           path: |
             ${{ steps.analyze.outputs.sarif-output }}
             ${{ runner.temp }}/codeql-report.md
+          if-no-files-found: error
+          retention-days: 90
+
+  php-security:
+    name: Scan PHP
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Semgrep
+        run: pipx install semgrep
+
+      - name: Run PHP security scan
+        id: semgrep
+        env:
+          SARIF_DIR: ${{ runner.temp }}/php-sarif
+        run: |
+          mkdir -p "${SARIF_DIR}"
+          set +e
+          semgrep scan \
+            --config p/php \
+            --config p/security-audit \
+            --config p/owasp-top-ten \
+            --config p/secrets \
+            --metrics off \
+            --sarif \
+            --output "${SARIF_DIR}/semgrep.sarif" \
+            .
+          status=$?
+          set -e
+          if [ "${status}" -ge 2 ]; then
+            echo "Semgrep failed with exit code ${status}" >&2
+            exit "${status}"
+          fi
+          echo "sarif-dir=${SARIF_DIR}" >> "${GITHUB_OUTPUT}"
+
+      - name: Upload SARIF to code scanning
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: ${{ steps.semgrep.outputs.sarif-dir }}/semgrep.sarif
+          category: "/language:php"
+          wait-for-processing: true
+
+      - name: Build Markdown report
+        env:
+          SARIF_DIR: ${{ steps.semgrep.outputs.sarif-dir }}
+        run: |
+          python3 .github/scripts/codeql-sarif-report.py \
+            "${SARIF_DIR}" \
+            --output "${{ runner.temp }}/php-security-report.md" \
+            --repository "${{ github.repository }}" \
+            --sha "${{ github.sha }}" \
+            --query-suite "semgrep p/php,p/security-audit,p/owasp-top-ten,p/secrets" \
+            | tee -a "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload PHP security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: php-security-report
+          path: |
+            ${{ steps.semgrep.outputs.sarif-dir }}
+            ${{ runner.temp }}/php-security-report.md
           if-no-files-found: error
           retention-days: 90
