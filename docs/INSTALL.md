@@ -18,7 +18,7 @@ sudo mysql librenms -e "SELECT device_id,name,radio_number,deleted FROM access_p
 
 ```bash
 cd /opt
-sudo git clone https://github.com/nonnihel/librenms-cisco-wlc-ap-monitor.git
+sudo git clone https://github.com/jeff1121/librenms-cisco-wlc-ap-monitor.git
 cd librenms-cisco-wlc-ap-monitor
 sudo bash install.sh
 ```

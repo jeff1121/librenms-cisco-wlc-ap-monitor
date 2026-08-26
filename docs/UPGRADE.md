@@ -62,7 +62,7 @@ First installation of the update checkout:
 cd /tmp
 sudo rm -rf librenms-cisco-wlc-ap-monitor-update
 sudo -u librenms -H git clone \
-  https://github.com/nonnihel/librenms-cisco-wlc-ap-monitor.git \
+  https://github.com/jeff1121/librenms-cisco-wlc-ap-monitor.git \
   librenms-cisco-wlc-ap-monitor-update
 ```
 

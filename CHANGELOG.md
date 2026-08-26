@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added a GitHub Actions CodeQL workflow for PHP security-and-quality scanning, with SARIF/Markdown reports.
+- Published the repository under `jeff1121/librenms-cisco-wlc-ap-monitor`.
+
 ## 1.2.0 - 2026-07-22
 
 - Added update-safe installation through `lnms plugin:add` and `composer.plugins.json`.

@@ -1,5 +1,8 @@
 # Cisco WLC AP Monitor for LibreNMS
 
+[![PHP lint](https://github.com/jeff1121/librenms-cisco-wlc-ap-monitor/actions/workflows/php-lint.yml/badge.svg)](https://github.com/jeff1121/librenms-cisco-wlc-ap-monitor/actions/workflows/php-lint.yml)
+[![CodeQL](https://github.com/jeff1121/librenms-cisco-wlc-ap-monitor/actions/workflows/codeql.yml/badge.svg)](https://github.com/jeff1121/librenms-cisco-wlc-ap-monitor/actions/workflows/codeql.yml)
+
 A LibreNMS package plugin for persistent monitoring of Cisco wireless access points registered to Cisco Wireless LAN Controllers (WLCs).
 
 The plugin solves a practical monitoring gap: when an AP disappears from a Cisco WLC, LibreNMS may no longer retain enough information in its normal access-point inventory to identify the exact AP that went offline. This plugin maintains its own persistent AP inventory, marks missing APs as **down**, and reports the AP name through a native LibreNMS service check and alert.
@@ -64,7 +67,7 @@ The project was developed and tested with LibreNMS 26.7/26.8 development builds,
 
 ```bash
 cd /opt
-sudo git clone https://github.com/nonnihel/librenms-cisco-wlc-ap-monitor.git
+sudo git clone https://github.com/jeff1121/librenms-cisco-wlc-ap-monitor.git
 cd librenms-cisco-wlc-ap-monitor
 sudo bash install.sh
 ```

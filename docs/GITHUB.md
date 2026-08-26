@@ -15,7 +15,7 @@ The repository is intended to contain only reusable plugin source and documentat
 ## Clone for development
 
 ```bash
-git clone https://github.com/nonnihel/librenms-cisco-wlc-ap-monitor.git
+git clone https://github.com/jeff1121/librenms-cisco-wlc-ap-monitor.git
 cd librenms-cisco-wlc-ap-monitor
 ```
 
@@ -49,7 +49,9 @@ git commit -m "Describe the change"
 git push -u origin feature/my-change
 ```
 
-Open a pull request into `main` and wait for the PHP lint workflow to pass.
+Open a pull request into `main` and wait for the PHP lint and CodeQL workflows to pass.
+
+CodeQL uploads alerts to the repository Security tab, writes a Markdown summary on the workflow run, and stores a `codeql-security-report` artifact (SARIF plus Markdown). The scan also runs every Monday and can be started manually with **Actions → CodeQL → Run workflow**.
 
 ## Create a release
 
