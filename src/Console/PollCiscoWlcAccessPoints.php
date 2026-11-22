@@ -211,54 +211,43 @@ final class PollCiscoWlcAccessPoints extends Command
     /** @param array<string, mixed> $device */
     private function rawHexInetAddresses(array $device): array
     {
-        $commonHelpers = base_path('includes/common.php');
-        if (! function_exists('external_exec') && is_file($commonHelpers)) {
-            require_once $commonHelpers;
-        }
+    $deviceModel = Device::query()->findOrFail((int) $device['device_id']);
 
-        $snmpHelpers = base_path('includes/snmp.inc.php');
-        if (! function_exists('gen_snmpwalk_cmd') && is_file($snmpHelpers)) {
-            require_once $snmpHelpers;
-        }
+    $response = SnmpQuery::device($deviceModel)
+    ->options(['-On', '-Ox'])
+    ->bulk(false)
+    ->walk(self::LOCAL_IP_OID);
 
-        if (! function_exists('gen_snmpwalk_cmd')) {
-            throw new \RuntimeException('LibreNMS SNMP command builder is unavailable.');
-        }
-
-        $command = \gen_snmpwalk_cmd(
-            $device,
-            self::LOCAL_IP_OID,
-            ['-On', '-Ox']
+    if (! $response->isValid()) {
+        throw new \RuntimeException(
+            'raw cLApInetAddress walk failed: ' . $response->getErrorMessage()
         );
+    }
 
-        $process = new Process($command, base_path());
-        $process->setTimeout((int) $this->option('timeout'));
-        $process->run();
+    $addresses = [];
+    $base = preg_quote(self::LOCAL_IP_OID, '/');
 
-        if (! $process->isSuccessful()) {
-            throw new \RuntimeException('raw cLApInetAddress walk failed: ' . trim($process->getErrorOutput() ?: $process->getOutput()));
+    foreach (preg_split('/\R/', $response->raw()) ?: [] as $line) {
+        if (preg_match('/^' . $base . '\.(\d+(?:\.\d+){5})\s+=\s+Hex-STRING:\s+((?:[0-9A-Fa-f]{2}\s*)+)$/', trim($line), $matches) !== 1) {
+            continue;
         }
 
-        $addresses = [];
-        $base = preg_quote(self::LOCAL_IP_OID, '/');
-        foreach (preg_split('/\R/', $process->getOutput()) ?: [] as $line) {
-            if (preg_match('/^' . $base . '\.(\d+(?:\.\d+){5})\s+=\s+Hex-STRING:\s+((?:[0-9A-Fa-f]{2}\s*)+)$/', trim($line), $matches) !== 1) {
-                continue;
-            }
+        $hex = preg_replace('/\s+/', '', $matches[2]);
+        $binary = is_string($hex) ? @hex2bin($hex) : false;
 
-            $hex = preg_replace('/\s+/', '', $matches[2]);
-            $binary = is_string($hex) ? @hex2bin($hex) : false;
-            if ($binary === false || ! in_array(strlen($binary), [4, 16], true)) {
-                continue;
-            }
-
-            $ip = @inet_ntop($binary);
-            if ($ip !== false) {
-                $addresses[$matches[1]] = $ip;
-            }
+        if ($binary === false || ! in_array(strlen($binary), [4, 16], true)) {
+            continue;
         }
 
-        return $addresses;
+        $ip = @inet_ntop($binary);
+
+        if ($ip !== false) {
+            $addresses[$matches[1]] = $ip;
+        }
+    }
+
+    return $addresses;
+
     }
 
     /** @param array<string, mixed> $values */
