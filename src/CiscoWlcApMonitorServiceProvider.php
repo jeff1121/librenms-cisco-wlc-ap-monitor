@@ -35,11 +35,12 @@ final class CiscoWlcApMonitorServiceProvider extends ServiceProvider
         // LibreNMS discovers dashboard widgets from routes registered below ajax/dash.
         Route::middleware(['web', 'auth'])
             ->prefix('ajax/dash')
-            ->name('cisco-wlc-ap-monitor.dashboard.')
+            ->name('widget.')
             ->group(function (): void {
                 Route::match(['get', 'post'], 'cisco-wlc-ap-monitor', CiscoWlcApMonitorWidgetController::class)
-                    ->name('widget');
+                    ->name('cisco-wlc-ap-monitor');
             });
+
 
         if ($this->app->runningInConsole()) {
             $this->commands([PollCiscoWlcAccessPoints::class]);
